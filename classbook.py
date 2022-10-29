@@ -13,7 +13,7 @@ class Phone(Field):
     pass
 
 
-class Record():
+class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
@@ -27,8 +27,18 @@ class Record():
     def add_phone(self, phon):
         self.phones.append(Phone(phon))
 
-    def clear_phones(self):
-        self.phones = []
+    def change_phones(self, phones):
+        for phone in phones:
+            if not self.delete_phone(phone):
+                self.add_phone(phone)
+
+
+    def delete_phone(self, phone):
+        for record_phone in self.phones:
+            if record_phone.value == phone:
+                self.phones.remove(record_phone)
+                return True
+        return False
 
 
 class AddressBook(UserDict):

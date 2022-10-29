@@ -23,9 +23,7 @@ def first_step():
 
 @input_error
 def add_contacts(data):
-    new_data = data.strip().split(" ")
-    name = new_data[0]
-    phones = new_data[1:]
+    name, *phones = data.strip().split(" ")
     if name in contacts:
         raise ValueError("Дублікат імені")
     new_record = Record(name)
@@ -37,18 +35,16 @@ def add_contacts(data):
     return f"Ви створили {name}:{phones}"
 
 @input_error
-def change_phones_funk(data):
-    new_data = data.strip().split(" ")
-    name = new_data[0]
-    phones = new_data[1:]
-    if contacts.has_record(name):
-        record = contacts.get_record(name)
-        record.clear_phones()
+def change_phone_funk(data):
+    name, *phones = data.strip().split(" ")
+    record = contacts[name]
+    record.change_phones(phones)
 
-        for phone in phones:
-            record.add_phone(phone)
+    return "Телефон було змінено"
 
-        return f"Для контакту {name} змінено номер на {phones}"
+
+
+    #     return f"Для контакту {name} змінено номер на {phones}"
     return f"За даним {name} контакту не існує, зверніться до команди add "
 
 @input_error
@@ -70,22 +66,32 @@ def quit_funk():  # Функція виходу з команд "good bye", "clo
 @input_error
 def del_funk(name):
     name = name.strip()
-    if contacts.has_record(name):
-        contacts.remove_record(name)
-        return f"{name} видалено"
-    raise ValueError (f"{name} знайти не вдалось")
+    contacts.remove_record(name)
+    return f"{name} видалено"
+
+
+@input_error
+def del_phone_funk(data):
+    name, phone = data.strip().split(" ")
+
+    record = contacts[name]
+    if record.delete_phone(phone):
+        return f"{phone} видалений"
+    return f"{phone} номер відсутній "
 
 
 COMMANDS = {
     "hello": first_step,
     "add": add_contacts,
-    "change phones": change_phones_funk,
+    "change phones": change_phone_funk,
     "phone": find_phone,
     "show all": show_all_funk,
     "good bye": quit_funk,
     "close": quit_funk,
     "exit": quit_funk,
-    "delete": del_funk
+    "delete phone": del_phone_funk,
+    "delete": del_funk,
+
 }
 
 def return_func(data):
